@@ -8,7 +8,6 @@ import 'package:online_course/src/features/course/domain/usecases/get_recommend_
 import 'package:online_course/src/features/course/pesentation/bloc/explore/course_bloc.dart';
 import 'package:online_course/src/features/course/pesentation/bloc/favorite_course/favorite_course_bloc.dart';
 import 'package:online_course/src/features/course/pesentation/bloc/feature/feature_course_bloc.dart';
-import 'package:online_course/src/features/course/pesentation/bloc/recommend/recommend_course_bloc.dart';
 
 final locator = GetIt.instance;
 
@@ -25,10 +24,6 @@ Future initLocator() async {
   locator
     ..registerFactory(() => FeatureCourseBloc(locator()))
     ..registerLazySingleton(() => GetFeatureCourseUseCase(locator()));
-
-  locator
-    ..registerFactory(() => RecommendCourseBloc(locator()))
-    ..registerLazySingleton(() => GetRecommendCourseUserCase(locator()));
 
   locator.registerFactory(() => FavoriteCourseBloc());
 }

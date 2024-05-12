@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:online_course/core/utils/app_constant.dart';
 import 'package:online_course/src/features/account/presentation/pages/account/account.dart';
-import 'package:online_course/src/features/chat/presentation/pages/chat/chat.dart';
 import 'package:online_course/src/features/course/pesentation/pages/explore/explore.dart';
 import 'package:online_course/src/features/course/pesentation/pages/my_course/my_course.dart';
 import 'package:online_course/src/theme/app_color.dart';
@@ -26,17 +25,12 @@ class _RootAppState extends State<RootApp> with TickerProviderStateMixin {
     {
       "icon": "assets/icons/search.svg",
       "active_icon": "assets/icons/search.svg",
-      "page": const ExplorePage(),
+      "page": const CourseSearchPage(),
     },
     {
       "icon": "assets/icons/play.svg",
       "active_icon": "assets/icons/play.svg",
       "page": const MyCoursePage(),
-    },
-    {
-      "icon": "assets/icons/chat.svg",
-      "active_icon": "assets/icons/chat.svg",
-      "page": const ChatPage(),
     },
     {
       "icon": "assets/icons/profile.svg",
