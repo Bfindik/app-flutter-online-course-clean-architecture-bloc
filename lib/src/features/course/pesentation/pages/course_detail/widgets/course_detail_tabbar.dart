@@ -4,7 +4,8 @@ import 'package:online_course/src/features/course/pesentation/pages/course_detai
 import 'package:online_course/src/theme/app_color.dart';
 
 class CourseDetailTabBar extends StatefulWidget {
-  const CourseDetailTabBar({super.key});
+  const CourseDetailTabBar({required this.courseId, super.key});
+  final int courseId; // Kursun id'si
 
   @override
   State<CourseDetailTabBar> createState() => _CourseDetailTabBarState();
@@ -57,7 +58,7 @@ class _CourseDetailTabBarState extends State<CourseDetailTabBar>
         physics: const NeverScrollableScrollPhysics(),
         controller: tabController,
         children: [
-          CourseDetailLessonList(lessons: lessons),
+          CourseDetailLessonList(courseId: widget.courseId),
           const Center(
             child: Text(
               "Coming Soon!",

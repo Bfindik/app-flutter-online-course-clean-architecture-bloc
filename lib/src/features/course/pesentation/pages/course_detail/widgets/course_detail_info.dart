@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
+import 'package:online_course/core/services/database_helper.dart';
 import 'package:online_course/src/features/course/domain/entities/course.dart';
 import 'package:online_course/src/features/course/pesentation/bloc/favorite_course/favorite_course_bloc.dart';
 import 'package:online_course/src/theme/app_color.dart';
@@ -13,6 +15,16 @@ class CourseDetailInfo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    DateTime startDate = DateTime.parse(course.startDate);
+    DateTime endData = DateTime.parse(course.endDate);
+    Future<String?> instructorName =
+        DatabaseHelper.instance.getInstructorNameById(course.instructorId);
+    DatabaseHelper.instance.printAllLessons();
+
+    // startDate'ı biçimlendir
+    String formattedDate = DateFormat('dd.MM.yyyy').format(startDate);
+    String formattedDateEnd = DateFormat('dd.MM.yyyy').format(endData);
+    print(course.craftDays.join(', '));
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -46,24 +58,24 @@ class CourseDetailInfo extends StatelessWidget {
         Row(
           children: [
             _buildCourseAttribute(Icons.play_circle_outlined,
-                AppColor.labelColor, course.startDate + course.endDate),
+                AppColor.labelColor, formattedDate + "-" + formattedDateEnd),
             const SizedBox(
               width: 15,
             ),
-            _buildCourseAttribute(Icons.schedule_rounded, AppColor.labelColor,
-                course.craftDays.join(', ')),
-            const SizedBox(
-              width: 15,
-            ),
-            _buildCourseAttribute(
-                Icons.star, AppColor.yellow, course.lessonIds.toString()),
+            _buildInstructorNameAttribute(
+                Icons.star, AppColor.yellow, instructorName),
           ],
         ),
         const SizedBox(
           height: 15,
         ),
+        _buildCourseDaysAttribute(
+            Icons.schedule_rounded, AppColor.labelColor, course.craftDays),
+        const SizedBox(
+          width: 15,
+        ),
         const Text(
-          "About Course",
+          "Kurs Hakkında",
           style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
         ),
         const SizedBox(
@@ -74,8 +86,8 @@ class CourseDetailInfo extends StatelessWidget {
           style: const TextStyle(color: AppColor.labelColor, height: 1.5),
           trimLines: 2,
           trimMode: TrimMode.Line,
-          trimCollapsedText: 'Show more',
-          trimExpandedText: 'Show less',
+          trimCollapsedText: 'daha fazla göster',
+          trimExpandedText: 'daha az göster',
           moreStyle: const TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.bold,
@@ -104,6 +116,75 @@ class CourseDetailInfo extends StatelessWidget {
           style: const TextStyle(color: AppColor.labelColor, fontSize: 14),
         ),
       ],
+    );
+  }
+
+  Widget _buildCourseDaysAttribute(
+      IconData icon, Color color, List<String> craftDays) {
+    return Row(
+      children: [
+        Icon(
+          icon,
+          size: 20,
+          color: color,
+        ),
+        const SizedBox(
+          width: 3,
+        ),
+        Expanded(
+          child: Wrap(
+            spacing: 8.0,
+            children: craftDays.map((day) {
+              return Text(
+                day,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  color: color,
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                ),
+              );
+            }).toList(),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildInstructorNameAttribute(
+      IconData icon, Color color, Future<String?> instructorNameFuture) {
+    return FutureBuilder<String?>(
+      future: instructorNameFuture,
+      builder: (context, snapshot) {
+        final String? instructorName = snapshot.data;
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return CircularProgressIndicator();
+        } else if (snapshot.hasError) {
+          return Text('Error: ${snapshot.error}');
+        } else {
+          return Row(
+            children: [
+              Icon(
+                icon,
+                size: 20,
+                color: color,
+              ),
+              const SizedBox(
+                width: 3,
+              ),
+              Text(
+                instructorName ??
+                    '', // Eğitmen adını gösterir, null ise boş bir dize gösterir
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style:
+                    const TextStyle(color: AppColor.labelColor, fontSize: 14),
+              ),
+            ],
+          );
+        }
+      },
     );
   }
 }

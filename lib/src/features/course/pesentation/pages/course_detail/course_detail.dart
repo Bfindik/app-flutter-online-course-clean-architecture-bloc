@@ -43,7 +43,7 @@ class CourseDetailPage extends StatelessWidget {
             height: 5,
           ),
           const Divider(),
-          const CourseDetailTabBar()
+          CourseDetailTabBar(courseId: course.id) // Removed const
         ],
       ),
     );

@@ -34,6 +34,9 @@ class _AddCoursePageState extends State<AddCoursePage> {
   List<String> weekendDays = ['Cumartesi', 'Pazar'];
   final TextEditingController _controller = TextEditingController();
   final TextEditingController imageURLController = TextEditingController();
+  final TextEditingController courseNameController =
+      TextEditingController(); // Add this line
+  final TextEditingController DescriptionController = TextEditingController();
 
   @override
   void initState() {
@@ -44,6 +47,7 @@ class _AddCoursePageState extends State<AddCoursePage> {
   @override
   void dispose() {
     _controller.dispose();
+    courseNameController.dispose(); // Dispose the controller
     super.dispose();
   }
 
@@ -236,6 +240,15 @@ class _AddCoursePageState extends State<AddCoursePage> {
                 ),
               ),
               SizedBox(height: 20.0),
+              TextFormField(
+                controller: courseNameController, // Add this TextFormField
+                decoration: InputDecoration(
+                  labelText: 'Kurs Adı',
+                  hintText: 'Kurs adını girin',
+                ),
+                keyboardType: TextInputType.text,
+              ),
+              SizedBox(height: 20.0),
               Text(
                 'El İşi Seçin:',
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
@@ -260,7 +273,7 @@ class _AddCoursePageState extends State<AddCoursePage> {
                         });
                       },
                       style: ElevatedButton.styleFrom(
-                        primary: selectedCategories.contains(index)
+                        backgroundColor: selectedCategories.contains(index)
                             ? AppColor.primary
                             : Colors.white,
                       ),
@@ -279,8 +292,7 @@ class _AddCoursePageState extends State<AddCoursePage> {
                         ? DateFormat.yMMMd().format(startDate!)
                         : 'Başlangıç Tarihi Seç'),
                   ),
-                  SizedBox(height: 20),
-                  SizedBox(height: 10),
+                  SizedBox(width: 20),
                   ElevatedButton(
                     onPressed: () => _selectEndDate(context),
                     child: Text(endDate != null
@@ -297,13 +309,14 @@ class _AddCoursePageState extends State<AddCoursePage> {
                 ),
                 keyboardType: TextInputType.multiline,
                 maxLines: null,
+                controller: DescriptionController,
               ),
               SizedBox(height: 20.0),
-              Text(
-                'Kurs Fiyatı (₺):',
-                style: TextStyle(fontSize: 18.0),
-              ),
               TextFormField(
+                decoration: InputDecoration(
+                  labelText: 'Kurs Fiyatı',
+                  hintText: 'TL',
+                ),
                 controller: _controller,
                 keyboardType: TextInputType.number,
               ),
@@ -320,21 +333,28 @@ class _AddCoursePageState extends State<AddCoursePage> {
               ElevatedButton(
                 onPressed: () async {
                   // Seçilen derslerin kimliklerini ve günlerini birleştir
-                  String lessonIds = selectedCategories.join(',');
+                  List<String> lessonIds = selectedCategories
+                      .map((index) => _categories[index]['id'].toString())
+                      .toList();
+                  print("seçilen değerler ${lessonIds}");
                   // craftDays haritasını JSON formatına dönüştür
                   String craftDaysJson = json.encode(craftDays);
 
                   Map<String, dynamic> course = {
                     'instructorId': selectedInstructorId,
-                    'name': selectedCraft, // Seçilen el işinin adı olabilir
-                    'description': _controller.text, // Kurs açıklaması
+                    'name':
+                        courseNameController.text, // Use the input course name
+                    'description':
+                        DescriptionController.text, // Kurs açıklaması
                     'price': coursePrice, // Kurs fiyatı
                     'image': imageURLController.text, // Resim URL'si
                     'startDate': startDate.toString(), // Başlangıç tarihi
                     'endDate': endDate.toString(), // Bitiş tarihi
-                    'lessonIds': lessonIds, // Seçilen derslerin kimlikleri
+                    'lessonIds':
+                        lessonIds.join(','), // Seçilen derslerin kimlikleri
                     'craftDays': craftDaysJson, // Seçilen ders günleri
                   };
+                  print(course);
 
                   int courseId =
                       await DatabaseHelper.instance.insertCourse(course);

@@ -47,6 +47,42 @@ class DatabaseHelper {
     await db.execute(user);
   }
 
+  Future<List<Map<String, dynamic>>> getLessonNamesByCourseId(
+      int courseId) async {
+    Database db = await instance.database;
+    List<Map<String, dynamic>> lessonList = [];
+
+    // İlgili kursun bilgisini al
+    Map<String, dynamic>? course = await getCourseById(courseId);
+
+    if (course != null) {
+      // Kursun ders ID'lerini ayırarak bir listeye dönüştür
+      List<String> lessonIds = (course['lessonIds'] as String).split(',');
+      print('Parsed Lesson IDs: $lessonIds');
+
+      // Her bir ders için ders bilgisini al ve listeye ekle
+      for (String lessonId in lessonIds) {
+        int id = int.parse(lessonId);
+        List<Map<String, dynamic>> lessons = await db.query(
+          'lessons',
+          where: 'id = ?',
+          whereArgs: [id],
+        );
+
+        // Ders bulunduysa listeye ekle
+        if (lessons.isNotEmpty) {
+          lessonList.add(lessons.first);
+          print(
+              'Found lesson: ${lessons.first}'); // Debug: Bulunan ders bilgisi
+        } else {
+          print('No lesson found for ID: $id'); // Debug: Bulunamayan ders
+        }
+      }
+    }
+
+    return lessonList;
+  }
+
   Future<int> insertInstructor(Map<String, dynamic> row) async {
     Database db = await instance.database;
     return await db.insert('instructors', row);
@@ -58,6 +94,15 @@ class DatabaseHelper {
     return await db.query('courses');
   }
 
+  Future<void> printAllLessons() async {
+    Database db = await instance.database;
+    List<Map<String, dynamic>> lessons = await db.query('lessons');
+
+    for (var lesson in lessons) {
+      print('Lesson: $lesson');
+    }
+  }
+
   Future<int> insertLesson(Map<String, dynamic> row, bool isWeekday) async {
     Database db = await instance.database;
     row['isWeekday'] = isWeekday ? 1 : 0; // 1: hafta içi, 0: hafta sonu
@@ -67,6 +112,11 @@ class DatabaseHelper {
   Future<List<Map<String, dynamic>>> getInstructors() async {
     Database db = await instance.database;
     return await db.query('instructors');
+  }
+
+  Future<List<Map<String, dynamic>>> getLessons() async {
+    Database db = await instance.database;
+    return await db.query('lessons');
   }
 
   Future<int> deleteInstructor(int id) async {
@@ -122,6 +172,25 @@ class DatabaseHelper {
     }
     // İşlem başarıyla tamamlandığında, burada bir değer döndürebilirsiniz.
     return 1; // Örneğin, eklenecek saat sayısını döndürüyoruz.
+  }
+
+  Future<String?> getInstructorNameById(int id) async {
+    try {
+      Database db = await instance.database;
+      List<Map<String, dynamic>> result = await db.query(
+        'instructors',
+        where: 'id = ?',
+        whereArgs: [id],
+      );
+      if (result.isNotEmpty) {
+        return result.first['name'];
+      } else {
+        return null;
+      }
+    } catch (e) {
+      print('Error fetching instructor name: $e');
+      return null;
+    }
   }
 
   Future<int> updateInstructor(Map<String, dynamic> updatedInstructor) async {
@@ -198,5 +267,67 @@ class DatabaseHelper {
     var res =
         await db.query("users", where: "usrName = ?", whereArgs: [usrName]);
     return res.isNotEmpty ? Users.fromMap(res.first) : null;
+  }
+
+  Future<int> deleteCourse(int id) async {
+    Database db = await instance.database;
+
+    // Delete the course from the courses table
+    return await db.delete('courses', where: 'id = ?', whereArgs: [id]);
+  }
+
+  // Get course by ID
+  Future<Map<String, dynamic>?> getCourseById(int id) async {
+    Database db = await instance.database;
+    List<Map<String, dynamic>> result = await db.query(
+      'courses',
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+    if (result.isNotEmpty) {
+      return result.first;
+    } else {
+      return null;
+    }
+  }
+
+  // Update course
+  Future<int> updateCourse(Map<String, dynamic> course) async {
+    Database db = await instance.database;
+    int id = course['id'];
+    return await db.update(
+      'courses',
+      course,
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+  }
+
+  static Future<List<Map<String, dynamic>>> searchCoursesByBudgetAndCategories({
+    required List<int> selectedCategories,
+    required double budget,
+  }) async {
+    Database db = await instance.database;
+
+    // Kursları filtrelemek için kullanılacak sorgu koşulu
+    String whereClause = '';
+
+    // Seçilen el işi kategorilerini ekleyin
+    if (selectedCategories.isNotEmpty) {
+      whereClause += 'id IN (${selectedCategories.join(',')}) AND ';
+    }
+
+    // Bütçeye göre sorgu koşulunu güncelleyin
+    if (budget > 0) {
+      whereClause += 'price >= $budget AND ';
+    }
+
+    // Sorgu koşulunu kontrol edin ve gerektiğinde son karakteri silin
+    if (whereClause.isNotEmpty) {
+      whereClause = 'WHERE ${whereClause.substring(0, whereClause.length - 5)}';
+    }
+
+    // Kursları arayın ve sonucu döndürün
+    return await db.rawQuery('SELECT * FROM courses $whereClause');
   }
 }

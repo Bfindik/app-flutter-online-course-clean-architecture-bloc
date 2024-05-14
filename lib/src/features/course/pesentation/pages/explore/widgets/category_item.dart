@@ -12,6 +12,7 @@ class CategoryItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print(data);
     return GestureDetector(
       onTap: onTap,
       child: AnimatedContainer(
@@ -35,7 +36,7 @@ class CategoryItem extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             SvgPicture.asset(
-              data["icon"],
+              "assets/icons/categories/design.svg",
               colorFilter: ColorFilter.mode(
                   isSelected ? Colors.white : AppColor.darker, BlendMode.srcIn),
               width: 16,

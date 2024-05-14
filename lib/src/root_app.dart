@@ -11,7 +11,8 @@ import 'features/course/pesentation/pages/home/home.dart';
 
 class RootApp extends StatefulWidget {
   final Users? profile;
-  const RootApp({super.key, this.profile});
+  final bool? isAdmin;
+  const RootApp({super.key, this.profile, this.isAdmin});
 
   @override
   State<RootApp> createState() => _RootAppState();

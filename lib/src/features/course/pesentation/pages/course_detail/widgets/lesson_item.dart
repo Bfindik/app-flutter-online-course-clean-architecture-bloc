@@ -9,6 +9,10 @@ class LessonItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Default image path
+    String defaultImage = 'assets/download.png';
+    print(data['name']);
+
     return Container(
         margin: const EdgeInsets.all(5),
         padding: const EdgeInsets.all(10),
@@ -27,7 +31,7 @@ class LessonItem extends StatelessWidget {
         child: Row(
           children: [
             CustomImage(
-              data["image"],
+              defaultImage, // Use default image if data["image"] is null
               radius: 10,
               height: 70,
               width: 70,
@@ -50,23 +54,6 @@ class LessonItem extends StatelessWidget {
                   ),
                   const SizedBox(
                     height: 10,
-                  ),
-                  Row(
-                    children: [
-                      const Icon(
-                        Icons.schedule_rounded,
-                        color: AppColor.labelColor,
-                        size: 14,
-                      ),
-                      const SizedBox(
-                        width: 2,
-                      ),
-                      Text(
-                        data["duration"],
-                        style: const TextStyle(
-                            fontSize: 13, color: AppColor.labelColor),
-                      ),
-                    ],
                   ),
                 ],
               ),

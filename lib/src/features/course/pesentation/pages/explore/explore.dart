@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:online_course/core/services/database_helper.dart';
 import 'package:online_course/core/utils/dummy_data.dart';
 import 'package:online_course/src/features/course/pesentation/pages/explore/widgets/category_item.dart';
-
 import 'package:online_course/src/theme/app_color.dart';
+import 'package:sqflite/sqflite.dart';
 
 class CourseSearchPage extends StatefulWidget {
   const CourseSearchPage({Key? key}) : super(key: key);
+
   @override
   _CourseSearchPageState createState() => _CourseSearchPageState();
 }
@@ -15,13 +17,95 @@ class _CourseSearchPageState extends State<CourseSearchPage> {
   bool isWeekdaySelected = false;
   bool isWeekendSelected = false;
   double budget = 0.0;
-  List<int> selectedCategories =
-      []; // Birden fazla seçilen kategorileri saklayacak liste
-  final List _categories = categories;
+  List<int> selectedCategories = [];
+  List<Map<String, dynamic>> _lessons =
+      []; // Veritabanından alınan derslerin listesi
+
   @override
   void initState() {
     super.initState();
-    selectedCraft = null; // veya başka bir başlangıç değeri olarak belirleyin
+    selectedCraft = null;
+    _loadLessons(); // Dersleri yükle
+  }
+
+  // Dersleri yükleme işlevi
+  void _loadLessons() async {
+    List<Map<String, dynamic>> lessons =
+        await DatabaseHelper.instance.getLessons();
+    print(lessons);
+    setState(() {
+      _lessons = lessons;
+      print(lessons);
+    });
+  }
+
+  void _performSearch() async {
+    final searchedCourses =
+        await DatabaseHelper.searchCoursesByBudgetAndCategories(
+      selectedCategories: selectedCategories,
+      budget: budget,
+    );
+
+    // Eğer arama sonucu boşsa, ekrana "Hiçbir sonuç bulunamadı" mesajını yazdır
+    if (searchedCourses.isEmpty) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Arama Sonuçları'),
+            content: Text('Hiçbir sonuç bulunamadı.'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop(); // Dialog penceresini kapat
+                },
+                child: Text('Kapat'),
+              ),
+            ],
+          );
+        },
+      );
+    } else {
+      print(searchedCourses);
+      // Eğer sonuçlar bulunduysa, arama sonuçlarını göster
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Arama Sonuçları'),
+            content: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text('Toplam kurs sayısı: ${searchedCourses.length}'),
+                SizedBox(height: 10),
+                Text('Arama sonuçları:'),
+                SizedBox(height: 10),
+                ListView.builder(
+                  itemCount: searchedCourses.length,
+                  itemBuilder: (context, index) {
+                    final course = searchedCourses[index];
+                    return ListTile(
+                      title: Text(course['name']), // Kurs adını göster
+                      subtitle: Text(
+                          'Price: ${course['price']}'), // Kurs fiyatını göster
+                    );
+                  },
+                ),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop(); // Dialog penceresini kapat
+                },
+                child: Text('Kapat'),
+              ),
+            ],
+          );
+        },
+      );
+    }
   }
 
   @override
@@ -36,36 +120,6 @@ class _CourseSearchPageState extends State<CourseSearchPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'El İşi Seçin:',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.only(bottom: 5, top: 5, left: 15),
-              child: Row(
-                children: List.generate(
-                  _categories.length,
-                  (index) => CategoryItem(
-                    data: _categories[index],
-                    isSelected: selectedCategories.contains(
-                        index), // Seçili kategorilerin listesinde mi kontrol edilir
-                    onTap: () {
-                      setState(() {
-                        if (selectedCategories.contains(index)) {
-                          selectedCategories.remove(
-                              index); // Kategoriyi seçili listesinden kaldır
-                        } else {
-                          selectedCategories
-                              .add(index); // Kategoriyi seçili listesine ekle
-                        }
-                      });
-                    },
-                  ),
-                ),
-              ),
-            ),
-            SizedBox(height: 20),
             Text(
               'Kurs Günleri:',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
@@ -92,6 +146,42 @@ class _CourseSearchPageState extends State<CourseSearchPage> {
             ),
             SizedBox(height: 20),
             Text(
+              'El İşi Seçin:',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.only(bottom: 5, top: 5, left: 15),
+              child: Row(
+                children: List.generate(
+                  _lessons.length,
+                  (index) {
+                    final lesson = _lessons[index];
+                    // Haftaiçi veya haftasonu seçeneklerine göre filtreleme yap
+                    if ((isWeekdaySelected && lesson['isWeekday'] == 1) ||
+                        (isWeekendSelected && lesson['isWeekday'] == 0)) {
+                      return CategoryItem(
+                        data: lesson,
+                        isSelected: selectedCategories.contains(index),
+                        onTap: () {
+                          setState(() {
+                            if (selectedCategories.contains(index)) {
+                              selectedCategories.remove(index);
+                            } else {
+                              selectedCategories.add(index);
+                            }
+                          });
+                        },
+                      );
+                    } else {
+                      return SizedBox.shrink(); // Görünmez bir widget döndür
+                    }
+                  },
+                ),
+              ),
+            ),
+            SizedBox(height: 20),
+            Text(
               'Bütçe Girin:',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
@@ -106,8 +196,8 @@ class _CourseSearchPageState extends State<CourseSearchPage> {
                 hintText: 'TL',
                 focusedBorder: OutlineInputBorder(
                   borderSide: BorderSide(
-                    color: AppColor.primary, // Kenarlık rengi
-                    width: 2.0, // Kenarlık kalınlığı
+                    color: AppColor.primary,
+                    width: 2.0,
                   ),
                 ),
               ),
@@ -117,10 +207,7 @@ class _CourseSearchPageState extends State<CourseSearchPage> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColor.primary,
               ),
-              onPressed: () {
-                // Perform search based on selected options
-                // You can navigate to another page to display search results
-              },
+              onPressed: _performSearch,
               child: Text(
                 'Ara',
                 style: const TextStyle(

@@ -38,7 +38,10 @@ class _LoginScreenState extends State<LoginScreen> {
       Navigator.push(
           context,
           MaterialPageRoute(
-              builder: (context) => RootApp(profile: usrDetails)));
+              builder: (context) => RootApp(
+                    profile: null,
+                    isAdmin: false,
+                  )));
     } else {
       //Otherwise show the error message
       setState(() {

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:online_course/core/utils/dummy_data.dart';
 import 'package:online_course/src/features/course/pesentation/pages/course_functions/course_add.dart';
+import 'package:online_course/src/features/course/pesentation/pages/course_functions/course_edit.dart';
+import 'package:online_course/src/features/course/pesentation/pages/course_functions/couse_delete.dart';
 import 'package:online_course/src/features/course/pesentation/pages/home/widgets/home_appbar.dart';
 import 'package:online_course/src/features/course/pesentation/pages/home/widgets/home_category.dart';
 import 'package:online_course/src/features/course/pesentation/pages/home/widgets/home_feature_block.dart';
@@ -147,8 +149,7 @@ class _HomePageState extends State<HomePage> {
                 onTap: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(
-                        builder: (context) => DeleteInstructorPage()),
+                    MaterialPageRoute(builder: (context) => DeleteCoursePage()),
                   );
                 },
               ),
@@ -158,8 +159,7 @@ class _HomePageState extends State<HomePage> {
                 onTap: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(
-                        builder: (context) => EditInstructorPage()),
+                    MaterialPageRoute(builder: (context) => CourseEditPage()),
                   );
                 },
               ),
