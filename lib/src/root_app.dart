@@ -12,7 +12,7 @@ import 'features/course/pesentation/pages/home/home.dart';
 class RootApp extends StatefulWidget {
   final Users? profile;
   final bool? isAdmin;
-  const RootApp({super.key, this.profile, this.isAdmin});
+  const RootApp({Key? key, this.profile, this.isAdmin}) : super(key: key);
 
   @override
   State<RootApp> createState() => _RootAppState();
@@ -27,29 +27,31 @@ class _RootAppState extends State<RootApp> with TickerProviderStateMixin {
   void initState() {
     super.initState();
     _profile = widget.profile; // Initialize _profile here
-    _barItems = [
-      // Initialize _barItems here
-      {
-        "icon": "assets/icons/home.svg",
-        "active_icon": "assets/icons/home.svg",
-        "page": const HomePage(),
-      },
-      {
-        "icon": "assets/icons/search.svg",
-        "active_icon": "assets/icons/search.svg",
-        "page": const CourseSearchPage(),
-      },
-      {
-        "icon": "assets/icons/play.svg",
-        "active_icon": "assets/icons/play.svg",
-        "page": const MyCoursePage(),
-      },
-      {
-        "icon": "assets/icons/profile.svg",
-        "active_icon": "assets/icons/profile.svg",
-        "page": Profile(profile: _profile), // Now _profile can be used here
-      },
-    ];
+    _barItems = widget.isAdmin ?? false
+        ? [
+            {
+              "icon": "assets/icons/home.svg",
+              "active_icon": "assets/icons/home.svg",
+              "page": const HomePage(),
+            },
+            {
+              "icon": "assets/icons/search.svg",
+              "active_icon": "assets/icons/search.svg",
+              "page": const CourseSearchPage(),
+            },
+          ]
+        : [
+            {
+              "icon": "assets/icons/play.svg",
+              "active_icon": "assets/icons/play.svg",
+              "page": const MyCoursePage(),
+            },
+            {
+              "icon": "assets/icons/profile.svg",
+              "active_icon": "assets/icons/profile.svg",
+              "page": Profile(profile: _profile),
+            },
+          ];
     _controller.forward();
   }
 

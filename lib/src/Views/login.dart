@@ -5,6 +5,7 @@ import 'package:online_course/src/Components/colors.dart';
 import 'package:online_course/src/Components/textfield.dart';
 import 'package:online_course/src/JSON/users.dart';
 import 'package:online_course/src/Views/profile.dart';
+import 'package:online_course/src/Views/admin_login.dart';
 import 'package:online_course/src/Views/signup.dart';
 import 'package:online_course/src/root_app.dart';
 import 'package:online_course/src/theme/app_color.dart';
@@ -28,6 +29,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final db = DatabaseHelper.instance;
   //Login Method
   //We will take the value of text fields using controllers in order to verify whether details are correct or not
+  final isAdmin = false;
   login() async {
     Users? usrDetails = await db.getUser(usrName.text);
     var res = await db
@@ -38,10 +40,7 @@ class _LoginScreenState extends State<LoginScreen> {
       Navigator.push(
           context,
           MaterialPageRoute(
-              builder: (context) => RootApp(
-                    profile: null,
-                    isAdmin: false,
-                  )));
+              builder: (context) => RootApp(profile: usrDetails, isAdmin: isAdmin,)));
     } else {
       //Otherwise show the error message
       setState(() {
@@ -115,16 +114,30 @@ class _LoginScreenState extends State<LoginScreen> {
                         child: const Text(
                           "Kayıt Ol",
                           selectionColor: AppColor.primary,
-                        ))
+                        )),
+                    const SizedBox(width: 10), // Araya bir boşluk ekleyelim
                   ],
                 ),
-
+                TextButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const AdminLoginScreen(), // Admin giriş sayfasına yönlendirme
+                      ),
+                    );
+                  },
+                  child: const Text(
+                    "Admin girişi için tıklayınız",
+                    style: TextStyle(color: AppColor.primary),
+                  ),
+                ),
                 // Access denied message in case when your username and password is incorrect
                 //By default we must hide it
                 //When login is not true then display the message
                 isLoginTrue
                     ? Text(
-                        "Username or password is incorrect",
+                        "Kullanıcı adı veya şifre hatalı",
                         style: TextStyle(color: Colors.red.shade900),
                       )
                     : const SizedBox(),

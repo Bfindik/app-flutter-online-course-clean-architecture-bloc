@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:online_course/core/services/database_helper.dart';
-import 'package:online_course/core/utils/dummy_data.dart';
+import 'package:online_course/src/features/course/domain/entities/course.dart';
 import 'package:online_course/src/features/course/pesentation/pages/explore/widgets/category_item.dart';
+import 'package:online_course/src/features/course/pesentation/pages/explore/widgets/explore_course_list.dart';
 import 'package:online_course/src/theme/app_color.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -32,19 +33,21 @@ class _CourseSearchPageState extends State<CourseSearchPage> {
   void _loadLessons() async {
     List<Map<String, dynamic>> lessons =
         await DatabaseHelper.instance.getLessons();
-    print(lessons);
     setState(() {
       _lessons = lessons;
-      print(lessons);
     });
   }
 
   void _performSearch() async {
-    final searchedCourses =
+    final searchedCoursesData =
         await DatabaseHelper.searchCoursesByBudgetAndCategories(
       selectedCategories: selectedCategories,
       budget: budget,
     );
+    // Convert the List<Map<String, dynamic>> to List<Course>
+    final searchedCourses = searchedCoursesData
+        .map((courseData) => Course.fromMap(courseData))
+        .toList();
 
     // Eğer arama sonucu boşsa, ekrana "Hiçbir sonuç bulunamadı" mesajını yazdır
     if (searchedCourses.isEmpty) {
@@ -66,44 +69,17 @@ class _CourseSearchPageState extends State<CourseSearchPage> {
         },
       );
     } else {
-      print(searchedCourses);
       // Eğer sonuçlar bulunduysa, arama sonuçlarını göster
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text('Arama Sonuçları'),
-            content: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text('Toplam kurs sayısı: ${searchedCourses.length}'),
-                SizedBox(height: 10),
-                Text('Arama sonuçları:'),
-                SizedBox(height: 10),
-                ListView.builder(
-                  itemCount: searchedCourses.length,
-                  itemBuilder: (context, index) {
-                    final course = searchedCourses[index];
-                    return ListTile(
-                      title: Text(course['name']), // Kurs adını göster
-                      subtitle: Text(
-                          'Price: ${course['price']}'), // Kurs fiyatını göster
-                    );
-                  },
-                ),
-              ],
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => Scaffold(
+            appBar: AppBar(
+              title: Text('Arama Sonuçları'),
             ),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop(); // Dialog penceresini kapat
-                },
-                child: Text('Kapat'),
-              ),
-            ],
-          );
-        },
+            body: ExploreCourseList(courses: searchedCourses),
+          ),
+        ),
       );
     }
   }

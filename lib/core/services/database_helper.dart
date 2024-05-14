@@ -11,6 +11,16 @@ class DatabaseHelper {
    usrId INTEGER PRIMARY KEY AUTOINCREMENT,
    fullName TEXT,
    email TEXT,
+   phoneNumber TEXT,
+   address TEXT,
+   usrName TEXT UNIQUE,
+   usrPassword TEXT
+   )
+   ''';
+
+  String admin = '''
+   CREATE TABLE admins (
+   adminId INTEGER PRIMARY KEY AUTOINCREMENT,
    usrName TEXT UNIQUE,
    usrPassword TEXT
    )
@@ -44,7 +54,18 @@ class DatabaseHelper {
     await db.execute(
       'CREATE TABLE courses(id INTEGER PRIMARY KEY AUTOINCREMENT, instructorId INTEGER, name TEXT, description TEXT, price REAL, image TEXT, startDate TEXT, endDate TEXT, lessonIds TEXT, craftDays TEXT)',
     );
-    await db.execute(user);
+    await db.execute(user); // users tablosunu oluştur
+    await db.execute(admin); // admins tablosunu oluştur
+    await _insertAdmin(db, 'admin', 'admin');
+  }
+
+  Future<int> _insertAdmin(
+      Database db, String userName, String password) async {
+    Map<String, dynamic> admin = {
+      'usrName': userName,
+      'usrPassword': password,
+    };
+    return await db.insert('admins', admin);
   }
 
   Future<List<Map<String, dynamic>>> getLessonNamesByCourseId(
@@ -329,5 +350,15 @@ class DatabaseHelper {
 
     // Kursları arayın ve sonucu döndürün
     return await db.rawQuery('SELECT * FROM courses $whereClause');
+  }
+
+  //Authentication for admin
+  Future<bool> authenticateAdmin(String usrName, String password) async {
+    Database db = await instance.database;
+    var result = await db.rawQuery(
+      "SELECT * FROM admins WHERE usrName = ? AND usrPassword = ?",
+      [usrName, password],
+    );
+    return result.isNotEmpty;
   }
 }
