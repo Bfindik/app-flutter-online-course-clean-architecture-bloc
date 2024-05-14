@@ -38,9 +38,10 @@ class Course extends Equatable {
       image: map['image'],
       startDate: map['startDate'],
       endDate: map['endDate'],
-      lessonIds: List<String>.from(map['lessonIds']),
-      craftDays: List<String>.from(map['craftDays']),
-      isFavorited: map['isFavorited'] ?? false,
+      lessonIds: List<String>.from(map['lessonIds'].split(',')),
+      craftDays: List<String>.from(map['craftDays'].split(',')),
+      isFavorited: map['isFavorited'] ==
+          1, // Assuming isFavorited is stored as an integer in the database
     );
   }
 
