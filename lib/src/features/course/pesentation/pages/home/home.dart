@@ -134,12 +134,16 @@ class _HomePageState extends State<HomePage> {
                 CustomButton(
                   radius: 10,
                   title: "Ekle",
+<<<<<<< HEAD
                   onTap: () {
                     Navigator.push(
                       context,
                       MaterialPageRoute(builder: (context) => AddCoursePage()),
                     );
                   },
+=======
+                  onTap: _addInstructor,
+>>>>>>> 4abfa489529a7a26596799ac393c6360ebb09e37
                 ),
               CustomButton(
                 radius: 10,

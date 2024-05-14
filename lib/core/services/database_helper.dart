@@ -1,11 +1,15 @@
 import 'dart:async';
+<<<<<<< HEAD
 import 'package:online_course/src/JSON/users.dart';
+=======
+>>>>>>> 4abfa489529a7a26596799ac393c6360ebb09e37
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
 class DatabaseHelper {
   static final DatabaseHelper instance = DatabaseHelper._privateConstructor();
   static Database? _database;
+<<<<<<< HEAD
   String user = '''
    CREATE TABLE users (
    usrId INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -15,6 +19,8 @@ class DatabaseHelper {
    usrPassword TEXT
    )
    ''';
+=======
+>>>>>>> 4abfa489529a7a26596799ac393c6360ebb09e37
 
   DatabaseHelper._privateConstructor();
 
@@ -35,6 +41,7 @@ class DatabaseHelper {
     );
 
     await db.execute(
+<<<<<<< HEAD
       'CREATE TABLE lessons(id INTEGER PRIMARY KEY AUTOINCREMENT, instructorId INTEGER, name TEXT, price REAL, isWeekday INTEGER)',
     );
 
@@ -45,6 +52,13 @@ class DatabaseHelper {
       'CREATE TABLE courses(id INTEGER PRIMARY KEY AUTOINCREMENT, instructorId INTEGER, name TEXT, description TEXT, price REAL, image TEXT, startDate TEXT, endDate TEXT, lessonIds TEXT, craftDays TEXT)',
     );
     await db.execute(user);
+=======
+      'CREATE TABLE lessons(id INTEGER PRIMARY KEY AUTOINCREMENT, instructorId INTEGER, name TEXT, price REAL)',
+    );
+    await db.execute(
+      'CREATE TABLE hours(id INTEGER PRIMARY KEY AUTOINCREMENT, instructorId INTEGER, hour INTEGER)',
+    );
+>>>>>>> 4abfa489529a7a26596799ac393c6360ebb09e37
   }
 
   Future<int> insertInstructor(Map<String, dynamic> row) async {
@@ -52,6 +66,7 @@ class DatabaseHelper {
     return await db.insert('instructors', row);
   }
 
+<<<<<<< HEAD
   // Yeni metod: Tüm kursları al
   Future<List<Map<String, dynamic>>> getCourses() async {
     Database db = await instance.database;
@@ -61,6 +76,10 @@ class DatabaseHelper {
   Future<int> insertLesson(Map<String, dynamic> row, bool isWeekday) async {
     Database db = await instance.database;
     row['isWeekday'] = isWeekday ? 1 : 0; // 1: hafta içi, 0: hafta sonu
+=======
+  Future<int> insertLesson(Map<String, dynamic> row) async {
+    Database db = await instance.database;
+>>>>>>> 4abfa489529a7a26596799ac393c6360ebb09e37
     return await db.insert('lessons', row);
   }
 
@@ -71,8 +90,17 @@ class DatabaseHelper {
 
   Future<int> deleteInstructor(int id) async {
     Database db = await instance.database;
+<<<<<<< HEAD
     await db.delete('hours', where: 'instructorId = ?', whereArgs: [id]);
     await db.delete('lessons', where: 'instructorId = ?', whereArgs: [id]);
+=======
+    // İlgili saatleri öğretmenle ilişkilendirilmiş olanları sil
+    // await db.delete('hours', where: 'instructorId = ?', whereArgs: [id]);
+
+    // İlgili dersleri öğretmenle ilişkilendirilmiş olanları sil
+    await db.delete('lessons', where: 'instructorId = ?', whereArgs: [id]);
+
+>>>>>>> 4abfa489529a7a26596799ac393c6360ebb09e37
     return await db.delete('instructors', where: 'id = ?', whereArgs: [id]);
   }
 
@@ -97,11 +125,14 @@ class DatabaseHelper {
         .query('hours', where: 'instructorId = ?', whereArgs: [instructorId]);
   }
 
+<<<<<<< HEAD
   Future<int> insertCourse(Map<String, dynamic> course) async {
     Database db = await instance.database;
     return await db.insert('courses', course);
   }
 
+=======
+>>>>>>> 4abfa489529a7a26596799ac393c6360ebb09e37
   Future<List<Map<String, dynamic>>> getLessonsByInstructorId(
       int instructorId) async {
     Database db = await instance.database;
@@ -109,11 +140,14 @@ class DatabaseHelper {
         .query('lessons', where: 'instructorId = ?', whereArgs: [instructorId]);
   }
 
+<<<<<<< HEAD
   Future<List<Map<String, dynamic>>> getLessonsByInstructor(
       int instructorId) async {
     return await DatabaseHelper.instance.getLessonsByInstructorId(instructorId);
   }
 
+=======
+>>>>>>> 4abfa489529a7a26596799ac393c6360ebb09e37
   // DatabaseHelper sınıfına saatleri eklemek için yeni bir fonksiyon ekleyin
   Future<int> insertHours(int instructorId, List<int> hours) async {
     Database db = await instance.database;
@@ -173,6 +207,7 @@ class DatabaseHelper {
       );
     });
   }
+<<<<<<< HEAD
 
   //Authentication
   Future<bool> authenticate(Users usr) async {
@@ -199,4 +234,6 @@ class DatabaseHelper {
         await db.query("users", where: "usrName = ?", whereArgs: [usrName]);
     return res.isNotEmpty ? Users.fromMap(res.first) : null;
   }
+=======
+>>>>>>> 4abfa489529a7a26596799ac393c6360ebb09e37
 }

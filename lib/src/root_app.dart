@@ -20,6 +20,7 @@ class RootApp extends StatefulWidget {
 class _RootAppState extends State<RootApp> with TickerProviderStateMixin {
   late final Users? _profile;
   int _activeTab = 0;
+<<<<<<< HEAD
   late final List<dynamic> _barItems; // Declare _barItems here
 
   @override
@@ -51,6 +52,30 @@ class _RootAppState extends State<RootApp> with TickerProviderStateMixin {
     ];
     _controller.forward();
   }
+=======
+  final List _barItems = [
+    {
+      "icon": "assets/icons/home.svg",
+      "active_icon": "assets/icons/home.svg",
+      "page": const HomePage(),
+    },
+    {
+      "icon": "assets/icons/search.svg",
+      "active_icon": "assets/icons/search.svg",
+      "page": const CourseSearchPage(),
+    },
+    {
+      "icon": "assets/icons/play.svg",
+      "active_icon": "assets/icons/play.svg",
+      "page": const MyCoursePage(),
+    },
+    {
+      "icon": "assets/icons/profile.svg",
+      "active_icon": "assets/icons/profile.svg",
+      "page": const AccountPage(),
+    },
+  ];
+>>>>>>> 4abfa489529a7a26596799ac393c6360ebb09e37
 
 //====== set animation=====
   late final AnimationController _controller = AnimationController(
