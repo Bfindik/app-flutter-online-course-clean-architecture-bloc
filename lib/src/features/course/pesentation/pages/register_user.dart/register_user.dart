@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:online_course/core/services/database_helper.dart';
+import 'package:online_course/src/JSON/users.dart';
+import 'package:online_course/src/features/course/domain/entities/course.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
 class CourseSelectionPage extends StatefulWidget {
+  final Course course;
+
+  const CourseSelectionPage({Key? key, required this.course}) : super(key: key);
   @override
   _CourseSelectionPageState createState() => _CourseSelectionPageState();
 }
@@ -14,6 +19,8 @@ class _CourseSelectionPageState extends State<CourseSelectionPage> {
   late String _selectedUser = '';
   late String _selectedPaymentMethod = '';
   late TextEditingController _ibanController;
+  int? selectedUserId;
+  List<String> list = <String>['Nakit', 'Kredi Kartı'];
 
   @override
   void initState() {
@@ -24,29 +31,36 @@ class _CourseSelectionPageState extends State<CourseSelectionPage> {
   }
 
   Future<void> _loadUsers() async {
-    final db = await _databaseHelper.database;
-    final users = await db.query('users');
+    final users = await _databaseHelper.getUsers();
+    print(users);
     setState(() {
       _users = users;
+      print(_users);
     });
   }
 
   Future<void> _makePayment() async {
-    // Ödeme yapılacak kursu ve tarihi kaydetmek için veritabanına kayıt oluşturun
-    final db = await _databaseHelper.database;
-    final courseId = 1; // Seçilen kursun ID'si
-    final userId = _selectedUser; // Seçilen kullanıcının ID'si
-    final paymentMethod = _selectedPaymentMethod;
-    final paymentDate = DateTime.now().toString();
-    await db.insert('payments', {
-      'userId': userId,
-      'courseId': courseId,
-      'paymentMethod': paymentMethod,
-      'paymentDate': paymentDate,
-    });
-
-    // Ödeme yapıldıktan sonra sayfayı yeniden yükleyin veya başka bir işlem yapın
-    // Örneğin, bir teşekkür mesajı gösterebilirsiniz.
+    if (selectedUserId != null) {
+      Users? user = await _databaseHelper.getUserById(selectedUserId!);
+      if (user != null) {
+        final db = await _databaseHelper.database;
+        final courseId = 1;
+        final userId = user.usrId;
+        final paymentMethod = _selectedPaymentMethod;
+        final paymentDate = DateTime.now().toString();
+        await db.insert('payments', {
+          'userId': userId,
+          'courseId': courseId,
+          'paymentMethod': paymentMethod,
+          'paymentDate': paymentDate,
+        });
+        _databaseHelper.printPayments();
+      } else {
+        print('Error: User not found!');
+      }
+    } else {
+      print('Error: User not selected!');
+    }
   }
 
   @override
@@ -60,36 +74,59 @@ class _CourseSelectionPageState extends State<CourseSelectionPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            DropdownButtonFormField<String>(
-              value: _selectedUser,
-              hint: Text('Kullanıcı Seçin'),
-              items: _users.map((user) {
-                return DropdownMenuItem(
-                  value: user['id'].toString(),
-                  child: Text(user['fullName']),
-                );
-              }).toList(),
-              onChanged: (value) {
-                setState(() {
-                  _selectedUser = value!;
-                });
-              },
+            SizedBox(height: 16.0),
+            Center(
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  border: Border.all(color: Colors.grey),
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+                child: DropdownButton<int>(
+                  hint: Text(
+                    'Kayıt olacak kursiyeri seçin',
+                    style: TextStyle(fontSize: 20),
+                  ),
+                  value: selectedUserId,
+                  onChanged: (int? newValue) {
+                    setState(() {
+                      selectedUserId = newValue;
+                    });
+                  },
+                  items: _users
+                      .map<DropdownMenuItem<int>>((Map<String, dynamic> user) {
+                    return DropdownMenuItem<int>(
+                      value: user['usrId'],
+                      child: Text(
+                        user['fullName'],
+                        style: TextStyle(fontSize: 20),
+                      ),
+                    );
+                  }).toList(),
+                ),
+              ),
             ),
             SizedBox(height: 16.0),
-            DropdownButtonFormField<String>(
+            Text(
+              'Ödeme Yöntemi:',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            DropdownButton<String>(
               value: _selectedPaymentMethod,
-              hint: Text('Ödeme Yöntemi Seçin'),
-              items: ['Nakit', 'Kredi Kartı'].map((method) {
-                return DropdownMenuItem(
-                  value: method,
-                  child: Text(method),
-                );
-              }).toList(),
-              onChanged: (value) {
+              onChanged: (String? value) {
                 setState(() {
                   _selectedPaymentMethod = value!;
                 });
               },
+              items: list.map<DropdownMenuItem<String>>((String value) {
+                return DropdownMenuItem<String>(
+                  value: value,
+                  child: Text(value),
+                );
+              }).toList(),
             ),
             if (_selectedPaymentMethod == 'Kredi Kartı') ...[
               SizedBox(height: 16.0),

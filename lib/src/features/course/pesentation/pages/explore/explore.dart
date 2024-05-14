@@ -39,48 +39,58 @@ class _CourseSearchPageState extends State<CourseSearchPage> {
   }
 
   void _performSearch() async {
-    final searchedCoursesData =
-        await DatabaseHelper.searchCoursesByBudgetAndCategories(
-      selectedCategories: selectedCategories,
-      budget: budget,
-    );
-    // Convert the List<Map<String, dynamic>> to List<Course>
-    final searchedCourses = searchedCoursesData
-        .map((courseData) => Course.fromMap(courseData))
-        .toList();
+    try {
+      final List<int> selectedLessonIds = selectedCategories
+          .map((index) => _lessons[index]['id'] as int)
+          .toList();
+      print(selectedLessonIds);
+      final searchedCoursesData =
+          await DatabaseHelper.searchCoursesByBudgetAndCategories(
+        selectedCategories: selectedLessonIds,
+        budget: budget,
+      );
+      print(searchedCoursesData);
+      // Convert the List<Map<String, dynamic>> to List<Course>
+      final List<Course> searchedCourses = searchedCoursesData
+          .map((courseData) => Course.fromMap(courseData))
+          .toList();
+      // print(searchedCourses);
 
-    // Eğer arama sonucu boşsa, ekrana "Hiçbir sonuç bulunamadı" mesajını yazdır
-    if (searchedCourses.isEmpty) {
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text('Arama Sonuçları'),
-            content: Text('Hiçbir sonuç bulunamadı.'),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop(); // Dialog penceresini kapat
-                },
-                child: Text('Kapat'),
-              ),
-            ],
-          );
-        },
-      );
-    } else {
-      // Eğer sonuçlar bulunduysa, arama sonuçlarını göster
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => Scaffold(
-            appBar: AppBar(
+      // Eğer arama sonucu boşsa, ekrana "Hiçbir sonuç bulunamadı" mesajını yazdır
+      if (searchedCourses.isEmpty) {
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
               title: Text('Arama Sonuçları'),
+              content: Text('Hiçbir sonuç bulunamadı.'),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop(); // Dialog penceresini kapat
+                  },
+                  child: Text('Kapat'),
+                ),
+              ],
+            );
+          },
+        );
+      } else {
+        // Eğer sonuçlar bulunduysa, arama sonuçlarını göster
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => Scaffold(
+              appBar: AppBar(
+                title: Text('Arama Sonuçları'),
+              ),
+              body: ExploreCourseList(courses: searchedCourses),
             ),
-            body: ExploreCourseList(courses: searchedCourses),
           ),
-        ),
-      );
+        );
+      }
+    } catch (e) {
+      print("hata${e}");
     }
   }
 

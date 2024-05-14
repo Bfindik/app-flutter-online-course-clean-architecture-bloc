@@ -17,6 +17,15 @@ class DatabaseHelper {
    usrPassword TEXT
    )
    ''';
+  String payments = '''
+CREATE TABLE payments (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  userId INTEGER,
+  courseId INTEGER,
+  paymentMethod TEXT,
+  paymentDate TEXT
+)
+''';
 
   String admin = '''
    CREATE TABLE admins (
@@ -56,7 +65,22 @@ class DatabaseHelper {
     );
     await db.execute(user); // users tablosunu oluştur
     await db.execute(admin); // admins tablosunu oluştur
+    await db.execute(payments); // payments tablosunu oluştur
     await _insertAdmin(db, 'admin', 'admin');
+  }
+
+  Future<List<Map<String, dynamic>>> getPayments() async {
+    try {
+      // Veritabanına erişim sağla
+      Database db = await instance.database;
+
+      // Tüm ödemeleri al ve geri döndür
+      return await db.query('payments');
+    } catch (e) {
+      // Hata durumunda boş bir liste döndür
+      print('Error getting payments: $e');
+      return [];
+    }
   }
 
   Future<int> _insertAdmin(
@@ -66,6 +90,25 @@ class DatabaseHelper {
       'usrPassword': password,
     };
     return await db.insert('admins', admin);
+  }
+
+  Future<void> printPayments() async {
+    try {
+      // Veritabanından ödemeleri al
+      List<Map<String, dynamic>> payments = await getPayments();
+
+      // Ödemeleri yazdır
+      for (var payment in payments) {
+        print('Payment ID: ${payment['id']}');
+        print('User ID: ${payment['userId']}');
+        print('Course ID: ${payment['courseId']}');
+        print('Payment Method: ${payment['paymentMethod']}');
+        print('Payment Date: ${payment['paymentDate']}');
+        print('---------------------------------');
+      }
+    } catch (e) {
+      print('Error printing payments: $e');
+    }
   }
 
   Future<List<Map<String, dynamic>>> getLessonNamesByCourseId(
@@ -183,6 +226,11 @@ class DatabaseHelper {
   Future<List<Map<String, dynamic>>> getLessonsByInstructor(
       int instructorId) async {
     return await DatabaseHelper.instance.getLessonsByInstructorId(instructorId);
+  }
+
+  Future<List<Map<String, dynamic>>> getUsers() async {
+    Database db = await instance.database;
+    return await db.query('users');
   }
 
   // DatabaseHelper sınıfına saatleri eklemek için yeni bir fonksiyon ekleyin
@@ -335,7 +383,10 @@ class DatabaseHelper {
 
     // Seçilen el işi kategorilerini ekleyin
     if (selectedCategories.isNotEmpty) {
-      whereClause += 'id IN (${selectedCategories.join(',')}) AND ';
+      // Seçilen kategorilerin herhangi biriyle eşleşen bir deseni arayın
+      for (int categoryId in selectedCategories) {
+        whereClause += 'lessonIds LIKE \'%$categoryId%\' OR ';
+      }
     }
 
     // Bütçeye göre sorgu koşulunu güncelleyin
@@ -345,7 +396,7 @@ class DatabaseHelper {
 
     // Sorgu koşulunu kontrol edin ve gerektiğinde son karakteri silin
     if (whereClause.isNotEmpty) {
-      whereClause = 'WHERE ${whereClause.substring(0, whereClause.length - 5)}';
+      whereClause = 'WHERE ${whereClause.substring(0, whereClause.length - 4)}';
     }
 
     // Kursları arayın ve sonucu döndürün
@@ -360,5 +411,24 @@ class DatabaseHelper {
       [usrName, password],
     );
     return result.isNotEmpty;
+  }
+
+  Future<Users?> getUserById(int userId) async {
+    try {
+      Database db = await instance.database;
+      List<Map<String, dynamic>> result = await db.query(
+        'users',
+        where: 'usrId = ?',
+        whereArgs: [userId],
+      );
+      if (result.isNotEmpty) {
+        return Users.fromMap(result.first);
+      } else {
+        return null;
+      }
+    } catch (e) {
+      print('Error fetching user by ID: $e');
+      return null;
+    }
   }
 }
