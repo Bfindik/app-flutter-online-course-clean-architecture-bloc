@@ -36,13 +36,13 @@ class _CourseDetailTabBarState extends State<CourseDetailTabBar>
       tabs: const [
         Tab(
           child: Text(
-            "Lessons",
+            "El İşi Kursları",
             style: TextStyle(color: AppColor.darker, fontSize: 16),
           ),
         ),
         Tab(
           child: Text(
-            "Exercises",
+            "Ödevler",
             style: TextStyle(color: AppColor.darker, fontSize: 16),
           ),
         ),

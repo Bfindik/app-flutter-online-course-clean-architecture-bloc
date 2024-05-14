@@ -34,7 +34,7 @@ class CourseDetailBottomBlock extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Text(
-                "Price",
+                "Ücret",
                 style: TextStyle(
                   fontSize: 14,
                   color: AppColor.labelColor,
@@ -63,13 +63,13 @@ class CourseDetailBottomBlock extends StatelessWidget {
           const SizedBox(
             width: 30,
           ),
-          Expanded(
+          /*Expanded(
             child: CustomButton(
               radius: 10,
               title: "Buy Now",
               onTap: () {},
             ),
-          ),
+          ),*/
         ],
       ),
     );

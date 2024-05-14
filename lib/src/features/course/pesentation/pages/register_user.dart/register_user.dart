@@ -43,9 +43,10 @@ class _CourseSelectionPageState extends State<CourseSelectionPage> {
     if (selectedUserId != null) {
       Users? user = await _databaseHelper.getUserById(selectedUserId!);
       if (user != null) {
+        // Ödeme yapılacak kursu ve tarihi kaydetmek için veritabanına kayıt oluşturun
         final db = await _databaseHelper.database;
-        final courseId = 1;
-        final userId = user.usrId;
+        final courseId = 1; // Seçilen kursun ID'si
+        final userId = user.usrId; // Kullanıcının ID'si
         final paymentMethod = _selectedPaymentMethod;
         final paymentDate = DateTime.now().toString();
         await db.insert('payments', {
@@ -55,10 +56,15 @@ class _CourseSelectionPageState extends State<CourseSelectionPage> {
           'paymentDate': paymentDate,
         });
         _databaseHelper.printPayments();
+
+        // Ödeme yapıldıktan sonra sayfayı yeniden yükleyin veya başka bir işlem yapın
+        // Örneğin, bir teşekkür mesajı gösterebilirsiniz.
       } else {
+        // Kullanıcı bulunamadı, hata mesajı gösterin veya başka bir işlem yapın
         print('Error: User not found!');
       }
     } else {
+      // Kullanıcı seçilmedi, hata mesajı gösterin veya başka bir işlem yapın
       print('Error: User not selected!');
     }
   }
@@ -79,8 +85,10 @@ class _CourseSelectionPageState extends State<CourseSelectionPage> {
               child: Container(
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  border: Border.all(color: Colors.grey),
-                  borderRadius: BorderRadius.circular(8.0),
+                  border: Border.all(
+                      color: Colors.grey), // Border rengi gri olarak ayarlandı
+                  borderRadius:
+                      BorderRadius.circular(8.0), // Border yuvarlaklığı
                 ),
                 child: DropdownButton<int>(
                   hint: Text(
@@ -99,7 +107,7 @@ class _CourseSelectionPageState extends State<CourseSelectionPage> {
                       value: user['usrId'],
                       child: Text(
                         user['fullName'],
-                        style: TextStyle(fontSize: 20),
+                        style: TextStyle(fontSize: 20), // Metin boyutunu büyüt
                       ),
                     );
                   }).toList(),
@@ -114,18 +122,17 @@ class _CourseSelectionPageState extends State<CourseSelectionPage> {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            DropdownButton<String>(
-              value: _selectedPaymentMethod,
-              onChanged: (String? value) {
+            DropdownMenu<String>(
+              initialSelection: list.first,
+              onSelected: (String? value) {
+                // This is called when the user selects an item.
                 setState(() {
                   _selectedPaymentMethod = value!;
                 });
               },
-              items: list.map<DropdownMenuItem<String>>((String value) {
-                return DropdownMenuItem<String>(
-                  value: value,
-                  child: Text(value),
-                );
+              dropdownMenuEntries:
+                  list.map<DropdownMenuEntry<String>>((String value) {
+                return DropdownMenuEntry<String>(value: value, label: value);
               }).toList(),
             ),
             if (_selectedPaymentMethod == 'Kredi Kartı') ...[

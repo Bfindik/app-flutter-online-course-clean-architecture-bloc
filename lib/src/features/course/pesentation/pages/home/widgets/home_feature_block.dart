@@ -31,7 +31,7 @@ class _HomeFeatureBlockState extends State<HomeFeatureBlock> {
         const Padding(
           padding: EdgeInsets.fromLTRB(15, 0, 15, 10),
           child: Text(
-            "Featured",
+            "Kurslar",
             style: TextStyle(
               color: AppColor.textColor,
               fontWeight: FontWeight.w600,
