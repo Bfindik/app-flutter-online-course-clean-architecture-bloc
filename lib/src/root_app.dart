@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:online_course/core/utils/app_constant.dart';
+import 'package:online_course/src/JSON/users.dart';
+import 'package:online_course/src/Views/profile.dart';
 import 'package:online_course/src/features/account/presentation/pages/account/account.dart';
-import 'package:online_course/src/features/chat/presentation/pages/chat/chat.dart';
 import 'package:online_course/src/features/course/pesentation/pages/explore/explore.dart';
 import 'package:online_course/src/features/course/pesentation/pages/my_course/my_course.dart';
 import 'package:online_course/src/theme/app_color.dart';
@@ -9,41 +10,47 @@ import 'package:online_course/src/widgets/bottombar_item.dart';
 import 'features/course/pesentation/pages/home/home.dart';
 
 class RootApp extends StatefulWidget {
-  const RootApp({Key? key}) : super(key: key);
+  final Users? profile;
+  const RootApp({super.key, this.profile});
 
   @override
   State<RootApp> createState() => _RootAppState();
 }
 
 class _RootAppState extends State<RootApp> with TickerProviderStateMixin {
+  late final Users? _profile;
   int _activeTab = 0;
-  final List _barItems = [
-    {
-      "icon": "assets/icons/home.svg",
-      "active_icon": "assets/icons/home.svg",
-      "page": const HomePage(),
-    },
-    {
-      "icon": "assets/icons/search.svg",
-      "active_icon": "assets/icons/search.svg",
-      "page": const ExplorePage(),
-    },
-    {
-      "icon": "assets/icons/play.svg",
-      "active_icon": "assets/icons/play.svg",
-      "page": const MyCoursePage(),
-    },
-    {
-      "icon": "assets/icons/chat.svg",
-      "active_icon": "assets/icons/chat.svg",
-      "page": const ChatPage(),
-    },
-    {
-      "icon": "assets/icons/profile.svg",
-      "active_icon": "assets/icons/profile.svg",
-      "page": const AccountPage(),
-    },
-  ];
+  late final List<dynamic> _barItems; // Declare _barItems here
+
+  @override
+  void initState() {
+    super.initState();
+    _profile = widget.profile; // Initialize _profile here
+    _barItems = [
+      // Initialize _barItems here
+      {
+        "icon": "assets/icons/home.svg",
+        "active_icon": "assets/icons/home.svg",
+        "page": const HomePage(),
+      },
+      {
+        "icon": "assets/icons/search.svg",
+        "active_icon": "assets/icons/search.svg",
+        "page": const CourseSearchPage(),
+      },
+      {
+        "icon": "assets/icons/play.svg",
+        "active_icon": "assets/icons/play.svg",
+        "page": const MyCoursePage(),
+      },
+      {
+        "icon": "assets/icons/profile.svg",
+        "active_icon": "assets/icons/profile.svg",
+        "page": Profile(profile: _profile), // Now _profile can be used here
+      },
+    ];
+    _controller.forward();
+  }
 
 //====== set animation=====
   late final AnimationController _controller = AnimationController(
@@ -54,12 +61,6 @@ class _RootAppState extends State<RootApp> with TickerProviderStateMixin {
     parent: _controller,
     curve: Curves.fastOutSlowIn,
   );
-
-  @override
-  void initState() {
-    super.initState();
-    _controller.forward();
-  }
 
   @override
   void dispose() {

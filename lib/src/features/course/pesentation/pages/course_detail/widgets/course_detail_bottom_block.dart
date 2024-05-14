@@ -48,7 +48,7 @@ class CourseDetailBottomBlock extends StatelessWidget {
                 text: TextSpan(
                   children: [
                     TextSpan(
-                      text: course.price,
+                      text: course.price.toString(),
                       style: const TextStyle(
                         fontSize: 18,
                         color: AppColor.textColor,

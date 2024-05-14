@@ -34,16 +34,4 @@ class CourseRepositoryImpl extends CourseRepository {
       );
     }
   }
-
-  @override
-  ResultFuture<List<Course>> getRecommendCourses() async {
-    try {
-      final result = await _courseRemoteDataSource.getRecommendCourses();
-      return Right(result);
-    } on ServerException {
-      return const Left(
-        ServerFailure(message: 'failed to connect to server', statusCode: 400),
-      );
-    }
-  }
 }

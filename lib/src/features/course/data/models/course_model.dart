@@ -1,81 +1,72 @@
-import 'dart:convert';
+// ignore_for_file: must_be_immutable
 
-import 'package:online_course/core/utils/typedef.dart';
 import 'package:online_course/src/features/course/domain/entities/course.dart';
 
-// ignore: must_be_immutable
 class CourseModel extends Course {
   CourseModel({
     required super.id,
+    required super.instructorId,
     required super.name,
     required super.description,
-    required super.duration,
-    required super.image,
     required super.price,
-    required super.review,
-    required super.session,
-    super.isFavorited = false,
+    required super.image,
+    required super.startDate,
+    required super.endDate,
+    required super.lessonIds,
+    required super.craftDays,
   });
 
-  CourseModel.fromMap(DataMap map)
-      : this(
-          id: map["id"] as int,
-          name: map["name"] as String,
-          description: map["description"] as String,
-          duration: map["duration"] as String,
-          image: map["image"] as String,
-          price: map["price"] as String,
-          review: map["review"] as String,
-          session: map["session"] as String,
-          isFavorited: false,
-        );
+  factory CourseModel.fromMap(Map<String, dynamic> map) {
+    return CourseModel(
+      id: map['id'] as int, // İd alanını bir tamsayıya dönüştür
+      instructorId: map['instructorId']
+          as int, // instructorId alanını bir tamsayıya dönüştür
+      name: map['name'] as String,
+      description: map['description'] as String,
+      price: map['price'] as double, // price alanını bir double'a dönüştür
+      image: map['image'] as String,
+      startDate: map['startDate'] as String,
+      endDate: map['endDate'] as String,
+      lessonIds: _parseList<String>(
+          map['lessonIds']), // lessonIds alanını bir int listesine dönüştür
+      craftDays: _parseList<String>(
+          map['craftDays']), // craftDays alanını bir String listesine dönüştür
+    );
+  }
 
-  factory CourseModel.fromJson(String json) =>
-      CourseModel.fromMap(jsonDecode(json) as DataMap);
-
-  CourseModel copyWith({
-    int? id,
-    String? name,
-    String? price,
-    String? image,
-    String? duration,
-    String? session,
-    String? review,
-    String? description,
-    bool? isFavorited,
-  }) =>
-      CourseModel(
-          id: id ?? this.id,
-          name: name ?? this.name,
-          price: price ?? this.price,
-          image: image ?? this.image,
-          duration: duration ?? this.duration,
-          session: session ?? this.session,
-          review: review ?? this.review,
-          description: description ?? this.description,
-          isFavorited: isFavorited ?? this.isFavorited);
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'instructorId': instructorId,
+      'name': name,
+      'description': description,
+      'price': price,
+      'image': image,
+      'startDate': startDate,
+      'endDate': endDate,
+      'lessonIds':
+          lessonIds.join(','), // Convert list to comma-separated string
+      'craftDays':
+          craftDays.join(','), // Convert list to comma-separated string
+    };
+  }
 
   factory CourseModel.empty() => CourseModel(
-        id: 0,
-        name: "_empty.name",
-        price: "_empty.price",
-        image: "_empty.image",
-        duration: "_empty.duration",
-        session: "_empty.session",
-        review: "_empty.review",
-        description: "_empty.description",
-        isFavorited: false,
-      );
+      id: 0,
+      name: "_empty.name",
+      price: 0,
+      image: "_empty.image",
+      startDate: "_empty.duration",
+      endDate: "_empty.session",
+      instructorId: 0,
+      description: "_empty.description",
+      craftDays: ["pazartesi", "salı"],
+      lessonIds: ["0", "1"]);
 
-  Map<String, dynamic> toMap() => {
-        "id": id,
-        "name": name,
-        "image": image,
-        "price": price,
-        "duration": duration,
-        "session": session,
-        "review": review,
-        "is_favorited": isFavorited,
-        "description": description,
-      };
+  static List<T> _parseList<T>(String input) {
+    if (input == null || input.isEmpty) {
+      return [];
+    }
+    return input.split(',').map((e) => e as T).toList();
+  }
 }

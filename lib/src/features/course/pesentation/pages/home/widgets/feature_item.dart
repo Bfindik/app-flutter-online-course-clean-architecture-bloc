@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:online_course/src/features/course/domain/entities/course.dart';
 import 'package:online_course/src/theme/app_color.dart';
 
@@ -104,7 +105,7 @@ class FeatureItem extends StatelessWidget {
         ],
       ),
       child: Text(
-        course.price,
+        course.price.toString(),
         style: const TextStyle(
           color: Colors.white,
           fontWeight: FontWeight.w500,
@@ -114,29 +115,23 @@ class FeatureItem extends StatelessWidget {
   }
 
   Widget _buildAttributes() {
+    // startDate'ı bir tarih nesnesine dönüştür
+    DateTime startDate = DateTime.parse(course.startDate);
+    DateTime endData = DateTime.parse(course.endDate);
+
+    // startDate'ı biçimlendir
+    String formattedDate = DateFormat('dd.MM.yyyy').format(startDate);
+    String formattedDateEnd = DateFormat('dd.MM.yyyy').format(endData);
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         _getAttribute(
           Icons.play_circle_outlined,
           AppColor.labelColor,
-          course.session,
+          formattedDate + "--" + formattedDateEnd,
         ),
         const SizedBox(
           width: 12,
-        ),
-        _getAttribute(
-          Icons.schedule_rounded,
-          AppColor.labelColor,
-          course.duration,
-        ),
-        const SizedBox(
-          width: 12,
-        ),
-        _getAttribute(
-          Icons.star,
-          AppColor.yellow,
-          course.review,
         ),
       ],
     );

@@ -7,7 +7,7 @@ class CustomButton extends StatelessWidget {
       required this.onTap,
       this.title = "",
       this.fsize = 14,
-      this.width = double.infinity,
+      this.width = 120,
       this.height = 45,
       this.bgColor = AppColor.primary,
       this.icon,

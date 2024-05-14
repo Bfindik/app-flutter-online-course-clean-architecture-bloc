@@ -91,7 +91,7 @@ class FavoriteItem extends StatelessWidget {
           height: 5,
         ),
         Text(
-          course.price,
+          course.price.toString(),
           style: const TextStyle(fontSize: 14, color: AppColor.textColor),
         ),
         const SizedBox(
@@ -114,7 +114,7 @@ class FavoriteItem extends StatelessWidget {
           width: 2,
         ),
         Text(
-          course.duration,
+          course.craftDays.join(', '),
           style: const TextStyle(
             fontSize: 12,
             color: AppColor.labelColor,
@@ -132,7 +132,7 @@ class FavoriteItem extends StatelessWidget {
           width: 2,
         ),
         Text(
-          course.review,
+          course.instructorId.toString(),
           style: const TextStyle(
             fontSize: 12,
             color: AppColor.labelColor,

@@ -24,7 +24,7 @@ class AppColor {
   static const pink = Color(0xFFf5bde8);
   static const purple = Color(0xFFcdacf9);
   static const red = Color(0xFFf77080);
-  static const orange = Color(0xFFf5ba92);
+  static const orange = Color.fromARGB(255, 244, 213, 193);
   static const sky = Color(0xFFABDEE6);
   static const blue = Color(0xFF509BE4);
 

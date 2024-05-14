@@ -130,12 +130,14 @@ class CourseItem extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        _buildAttribute(Icons.sell_outlined, AppColor.labelColor, course.price),
         _buildAttribute(
-            Icons.play_circle_outlined, AppColor.labelColor, course.session),
+            Icons.sell_outlined, AppColor.labelColor, course.price.toString()),
+        _buildAttribute(Icons.play_circle_outlined, AppColor.labelColor,
+            course.startDate + course.endDate),
+        _buildAttribute(Icons.schedule_rounded, AppColor.labelColor,
+            course.craftDays.join(', ')),
         _buildAttribute(
-            Icons.schedule_rounded, AppColor.labelColor, course.duration),
-        _buildAttribute(Icons.star, AppColor.yellow, course.review),
+            Icons.star, AppColor.yellow, course.lessonIds.toString()),
       ],
     );
   }

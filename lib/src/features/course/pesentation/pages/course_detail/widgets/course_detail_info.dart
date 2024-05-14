@@ -46,16 +46,17 @@ class CourseDetailInfo extends StatelessWidget {
         Row(
           children: [
             _buildCourseAttribute(Icons.play_circle_outlined,
-                AppColor.labelColor, course.session),
+                AppColor.labelColor, course.startDate + course.endDate),
+            const SizedBox(
+              width: 15,
+            ),
+            _buildCourseAttribute(Icons.schedule_rounded, AppColor.labelColor,
+                course.craftDays.join(', ')),
             const SizedBox(
               width: 15,
             ),
             _buildCourseAttribute(
-                Icons.schedule_rounded, AppColor.labelColor, course.duration),
-            const SizedBox(
-              width: 15,
-            ),
-            _buildCourseAttribute(Icons.star, AppColor.yellow, course.review),
+                Icons.star, AppColor.yellow, course.lessonIds.toString()),
           ],
         ),
         const SizedBox(

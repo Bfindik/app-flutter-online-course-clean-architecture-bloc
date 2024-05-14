@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:online_course/core/utils/dummy_data.dart';
+import 'package:online_course/src/features/course/pesentation/pages/course_functions/course_add.dart';
 import 'package:online_course/src/features/course/pesentation/pages/home/widgets/home_appbar.dart';
 import 'package:online_course/src/features/course/pesentation/pages/home/widgets/home_category.dart';
 import 'package:online_course/src/features/course/pesentation/pages/home/widgets/home_feature_block.dart';
-import 'package:online_course/src/features/course/pesentation/pages/home/widgets/home_recommend_block.dart';
+import 'package:online_course/src/features/course/pesentation/pages/instructor/add_instructor.dart';
+import 'package:online_course/src/features/course/pesentation/pages/instructor/delete_instructor.dart';
+import 'package:online_course/src/features/course/pesentation/pages/instructor/edit_instructor_infos.dart';
 import 'package:online_course/src/theme/app_color.dart';
+import 'package:online_course/src/widgets/custom_button.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -14,9 +18,13 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  bool showButton = true;
+
   @override
   void initState() {
     super.initState();
+    // Example: Set showButton to true based on some condition
+    // showButton = shouldShowButton();
   }
 
   @override
@@ -43,7 +51,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  _buildBody() {
+  Widget _buildBody() {
     return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(vertical: 10),
       child: Column(
@@ -59,9 +67,114 @@ class _HomePageState extends State<HomePage> {
           const SizedBox(
             height: 15,
           ),
-          const HomeRecommendBlcok(),
+          const Padding(
+            padding: EdgeInsets.fromLTRB(15, 0, 15, 10),
+            child: Text(
+              "Öğretmen",
+              style: TextStyle(
+                color: AppColor.textColor,
+                fontWeight: FontWeight.w600,
+                fontSize: 24,
+              ),
+            ),
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment
+                .spaceEvenly, // Butonların arasında boşluk olacak şekilde hizalama yapar
+            children: [
+              if (showButton)
+                CustomButton(
+                  radius: 10,
+                  title: "Ekle",
+                  onTap: _addInstructor,
+                ),
+              CustomButton(
+                radius: 10,
+                title: "Sil",
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => DeleteInstructorPage()),
+                  );
+                },
+              ),
+              CustomButton(
+                radius: 10,
+                title: "Düzenle",
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => EditInstructorPage()),
+                  );
+                },
+              ),
+            ],
+          ),
+          const SizedBox(
+            height: 15,
+          ),
+          const Padding(
+            padding: EdgeInsets.fromLTRB(15, 0, 15, 10),
+            child: Text(
+              "Kurs",
+              style: TextStyle(
+                color: AppColor.textColor,
+                fontWeight: FontWeight.w600,
+                fontSize: 24,
+              ),
+            ),
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment
+                .spaceEvenly, // Butonların arasında boşluk olacak şekilde hizalama yapar
+            children: [
+              if (showButton)
+                CustomButton(
+                  radius: 10,
+                  title: "Ekle",
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => AddCoursePage()),
+                    );
+                  },
+                ),
+              CustomButton(
+                radius: 10,
+                title: "Sil",
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => DeleteInstructorPage()),
+                  );
+                },
+              ),
+              CustomButton(
+                radius: 10,
+                title: "Düzenle",
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => EditInstructorPage()),
+                  );
+                },
+              ),
+            ],
+          ),
         ],
       ),
+    );
+  }
+
+  void _addInstructor() {
+    // Implementation of _addInstructor method
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => AddInstructorPage()),
     );
   }
 }

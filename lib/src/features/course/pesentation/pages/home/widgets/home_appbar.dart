@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:online_course/src/widgets/notification_box.dart';
 import 'package:online_course/src/theme/app_color.dart';
 
 class HomeAppBar extends StatelessWidget {
@@ -27,19 +26,16 @@ class HomeAppBar extends StatelessWidget {
                 height: 5,
               ),
               const Text(
-                "Good Morning!",
+                "Hoş Geldin!",
                 style: TextStyle(
                   color: AppColor.textColor,
                   fontWeight: FontWeight.w500,
-                  fontSize: 18,
+                  fontSize: 20,
                 ),
               ),
             ],
           ),
         ),
-        const NotificationBox(
-          notifiedNumber: 1,
-        )
       ],
     );
   }
