@@ -5,7 +5,6 @@ import 'package:online_course/src/Views/auth.dart';
 import 'package:online_course/src/features/course/pesentation/bloc/explore/course_bloc.dart';
 import 'package:online_course/src/features/course/pesentation/bloc/favorite_course/favorite_course_bloc.dart';
 import 'package:online_course/src/features/course/pesentation/bloc/feature/feature_course_bloc.dart';
-import 'package:online_course/src/root_app.dart';
 import 'src/theme/app_color.dart';
 
 void main() async {
